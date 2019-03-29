@@ -94,8 +94,17 @@ given the string `"() => {}"`.
 
 https://github.com/tc39/ecma262/issues/938#issuecomment-457352474
 
-[host callout proposal]: https://github.com/mikesamuel/proposal-hostensurecancompilestrings-passthru
+TODO: Define well-known symbol and define an IsCodeLike operation that allows both strings and objects that have that symbol and use that in lieu of the Type(code) is String check.
+TODO: Do we look up symbol in callee's realm?
 
+TODO: Write spec language
+
+TODO: Find relevant test262 tests
+
+## Related
+
+https://github.com/tc39/ecma262/issues/1495
 
 
 [Trusted Types]: (https://wicg.github.io/trusted-types)
+[host callout proposal]: https://github.com/mikesamuel/proposal-hostensurecancompilestrings-passthru
