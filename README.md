@@ -115,11 +115,14 @@ One option is to:
 You can browse the [ecmarkup output](https://mikesamuel.github.io/evalable/)
 or browse the [source](https://github.com/mikesamuel/evalable/blob/master/spec.emu).
 
+
 ## Testing
 
-https://github.com/tc39/test262/tree/master/test/built-ins/eval ?
+TODO: Updates to
 
-TODO: Find relevant test262 tests
+*  https://github.com/tc39/test262/blob/master/test/language/eval-code/direct/non-string-object.js
+*  https://github.com/tc39/test262/blob/master/test/language/eval-code/indirect/non-string-object.js
+
 
 ## Related
 
