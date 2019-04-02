@@ -92,12 +92,32 @@ given the string `"() => {}"`.
 
 ## Possible solutions
 
-https://github.com/tc39/ecma262/issues/938#issuecomment-457352474
+From [ecma262 issue #938](https://github.com/tc39/ecma262/issues/938#issuecomment-457352474):
 
-TODO: Define well-known symbol and define an IsCodeLike operation that allows both strings and objects that have that symbol and use that in lieu of the Type(code) is String check.
-TODO: Do we look up symbol in callee's realm?
+> # Include the string to be compiled in the call to
+> `HostEnsureCanCompileStrings` Perhaps we could tweak the `eval` algo
+> so that if the input is a string or has a particular symbol property
+> then it is stringified to avoid breaking code that depends on the
+> current behavior where `eval` is identity except for strings.
 
-TODO: Write spec language
+One option is to:
+
+*  Define a well-known symbol, *\@\@evalable*.
+*  Define IsCodeLike(*x*), a spec abstraction that returns true for strings
+   so is backwards compatible, and returns true when *x* is an object and
+   `x[Symbol.evalable]` is truthy.
+   Note: using a new symbol makes IsCodeLike backwards comparible for programs
+   that do not use `Symbol.evalable`.
+*  Tweak PerformEval, which is called by both direct and indirect `eval`, to
+   use IsCodeLike(*x*) instead of the existing (Type(*x*) is String).
+*  Use ToString(*x*) for the code to parse.
+
+You can browse the [ecmarkup output](https://mikesamuel.github.io/evalable/)
+or browse the [source](https://github.com/mikesamuel/evalable/blob/master/spec.emu).
+
+## Testing
+
+https://github.com/tc39/test262/tree/master/test/built-ins/eval ?
 
 TODO: Find relevant test262 tests
 
