@@ -1,0 +1,134 @@
+<!doctype html>
+<meta charset="utf8">
+<link rel="stylesheet" href="./spec.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
+<script src="./spec.js"></script>
+<pre class="metadata">
+title: Proposal Evalable
+stage: 0
+contributors: Mike Samuel
+</pre>
+
+<p>Relaxes the "Type(x) is *string*" requirement for inputs to `eval`
+to enable restricting dynamic code loading to values that have been
+attested to previously.</p>
+
+<ul>
+ <li>Adds an entry for @@evalable to the
+   <a href="https://tc39.github.io/ecma262#sec-well-known-symbols">Well-Known Symbols</a>
+   table.</li>
+ <li>Adds an algorithm, <emu-xref aoid="IsCodeLike">IsCodeLike</emu-xref>
+   that treats strings for backwards compatibility but also returns *true* for
+   objects, _x_, when _x_[@@evalable] is truthy.</li>
+ <li>Tweaks <a href="https://tc39.github.io/ecma262#sec-performeval">PerformEval</a>
+   to use IsCodeLike and to coerce the code to a string.</li>
+</ul>
+
+
+<emu-clause id="sec-well-known-symbols">
+  <h1>Well-Known Symbols</h1>
+  <emu-table id="table-1" caption="Well-known Symbols">
+    <table>
+      <tbody>
+        <tr>
+          <th>
+            Specification Name
+          </th>
+          <th>
+            [[Description]]
+          </th>
+          <th>
+            Value and Purpose
+          </th>
+        </tr>
+        <tr>
+          <td>
+            <ins>@@evalable</ins>
+          </td>
+          <td>
+            <ins>`"Symbol.evalable"`</ins>
+          </td>
+          <td>
+            <ins>Boolean property that indicates whether the object may be
+            interpreted as code by `eval`.</ins>
+          </td>
+        </tr>
+    </table>
+  </emu-table>
+</emu-clause>
+
+<emu-clause id="sec-eval-x">
+  <h1>eval ( _x_ )</h1>
+  <p>The `eval` function is the <dfn>%eval%</dfn> intrinsic object. When the `eval` function is called with one argument _x_, the following steps are taken:</p>
+  <emu-alg>
+    1. Assert: The execution context stack has at least two elements.
+    1. Let _callerContext_ be the second to top element of the execution context stack.
+    1. Let _callerRealm_ be _callerContext_'s Realm.
+    1. Let _calleeRealm_ be the current Realm Record.
+    1. Perform ? HostEnsureCanCompileStrings(_callerRealm_, _calleeRealm_).
+    1. Return ? PerformEval(_x_, _calleeRealm_, *false*, *false*).
+  </emu-alg>
+
+  <emu-clause id="sec-performeval" aoid="PerformEval">
+    <h1>Runtime Semantics: PerformEval ( _x_, _evalRealm_, _strictCaller_, _direct_ )</h1>
+    <p>The abstract operation PerformEval with arguments _x_, _evalRealm_, _strictCaller_, and _direct_ performs the following steps:</p>
+    <emu-alg>
+      1. Assert: If _direct_ is *false*, then _strictCaller_ is also *false*.
+      1. If <del>Type(_x_) is not String</del> <ins>IsCodeLike(_x_) is not *true*</ins>, return _x_.
+      1. <ins>Set _x_ to ! ToString(_x_).</ins>
+      1. Let _thisEnvRec_ be ! GetThisEnvironment().
+      1. If _thisEnvRec_ is a function Environment Record, then
+        1. Let _F_ be _thisEnvRec_.[[FunctionObject]].
+        1. Let _inFunction_ be *true*.
+        1. Let _inMethod_ be _thisEnvRec_.HasSuperBinding().
+        1. If _F_.[[ConstructorKind]] is `"derived"`, let _inDerivedConstructor_ be *true*; otherwise, let _inDerivedConstructor_ be *false*.
+      1. Else,
+        1. Let _inFunction_ be *false*.
+        1. Let _inMethod_ be *false*.
+        1. Let _inDerivedConstructor_ be *false*.
+      1. Let _script_ be the ECMAScript code that is the result of parsing _x_, interpreted as UTF-16 encoded Unicode text as described in <emu-xref href="#sec-ecmascript-language-types-string-type"></emu-xref>, for the goal symbol |Script|. If _inFunction_ is *false*, additional early error rules from <emu-xref href="#sec-performeval-rules-outside-functions"></emu-xref> are applied. If _inMethod_ is *false*, additional early error rules from <emu-xref href="#sec-performeval-rules-outside-methods"></emu-xref> are applied. If _inDerivedConstructor_ is *false*, additional early error rules from <emu-xref href="#sec-performeval-rules-outside-constructors"></emu-xref> are applied. If the parse fails, throw a *SyntaxError* exception. If any early errors are detected, throw a *SyntaxError* or a *ReferenceError* exception, depending on the type of the error (but see also clause <emu-xref href="#sec-error-handling-and-language-extensions"></emu-xref>). Parsing and early error detection may be interweaved in an implementation-dependent manner.
+      1. If _script_ Contains |ScriptBody| is *false*, return *undefined*.
+      1. Let _body_ be the |ScriptBody| of _script_.
+      1. If _strictCaller_ is *true*, let _strictEval_ be *true*.
+      1. Else, let _strictEval_ be IsStrict of _script_.
+      1. Let _ctx_ be the running execution context.
+      1. NOTE: If _direct_ is *true*, _ctx_ will be the execution context that performed the direct eval. If _direct_ is *false*, _ctx_ will be the execution context for the invocation of the `eval` function.
+      1. If _direct_ is *true*, then
+        1. Let _lexEnv_ be NewDeclarativeEnvironment(_ctx_'s LexicalEnvironment).
+        1. Let _varEnv_ be _ctx_'s VariableEnvironment.
+      1. Else,
+        1. Let _lexEnv_ be NewDeclarativeEnvironment(_evalRealm_.[[GlobalEnv]]).
+        1. Let _varEnv_ be _evalRealm_.[[GlobalEnv]].
+      1. If _strictEval_ is *true*, set _varEnv_ to _lexEnv_.
+      1. If _ctx_ is not already suspended, suspend _ctx_.
+      1. Let _evalCxt_ be a new ECMAScript code execution context.
+      1. Set the _evalCxt_'s Function to *null*.
+      1. Set the _evalCxt_'s Realm to _evalRealm_.
+      1. Set the _evalCxt_'s ScriptOrModule to _ctx_'s ScriptOrModule.
+      1. Set the _evalCxt_'s VariableEnvironment to _varEnv_.
+      1. Set the _evalCxt_'s LexicalEnvironment to _lexEnv_.
+      1. Push _evalCxt_ on to the execution context stack; _evalCxt_ is now the running execution context.
+      1. Let _result_ be EvalDeclarationInstantiation(_body_, _varEnv_, _lexEnv_, _strictEval_).
+      1. If _result_.[[Type]] is ~normal~, then
+        1. Set _result_ to the result of evaluating _body_.
+      1. If _result_.[[Type]] is ~normal~ and _result_.[[Value]] is ~empty~, then
+        1. Set _result_ to NormalCompletion(*undefined*).
+      1. Suspend _evalCxt_ and remove it from the execution context stack.
+      1. Resume the context that is now on the top of the execution context stack as the running execution context.
+      1. Return Completion(_result_).
+    </emu-alg>
+  </emu-clause>
+
+  <emu-clause id="sec-iscodelike" aoid="IsCodeLike">
+    <h1><ins>Runtime Semantics: IsCodeLike ( _x_, _currentRealm_ )</ins></h1>
+    <p><ins>The abstract operation IsCodeLike with argument _x_, _currentRealm_ performs the following steps:</ins></p>
+    <emu-alg>
+      1. <ins>If Type(_x_) is not String, return *true*.</ins>
+      1. <ins>If Type(_x_) is Object, then</ins>
+         1. <ins>Let _evalable_ be ? Get(_x_, @@evalable).</ins>
+         1. <ins>Return ToBoolean(_evalable_).</ins>
+      1. <ins>Return *false*.</ins>
+    </emu-alg>
+  </emu-clause>
+
+</emu-clause>
