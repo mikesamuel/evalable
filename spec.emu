@@ -123,7 +123,7 @@ attested to previously.</p>
     <h1><ins>Runtime Semantics: IsCodeLike ( _x_, _currentRealm_ )</ins></h1>
     <p><ins>The abstract operation IsCodeLike with argument _x_, _currentRealm_ performs the following steps:</ins></p>
     <emu-alg>
-      1. <ins>If Type(_x_) is not String, return *true*.</ins>
+      1. <ins>If Type(_x_) is String, return *true*.</ins>
       1. <ins>If Type(_x_) is Object, then</ins>
          1. <ins>Let _evalable_ be ? Get(_x_, @@evalable).</ins>
          1. <ins>Return ToBoolean(_evalable_).</ins>
