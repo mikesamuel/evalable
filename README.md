@@ -111,8 +111,8 @@ All the approaches below do the following
 
 #### Pros
 
-IsCodeLike has no observable side effect for values so is backwards
-compatible when a program produces no code like values.
+*  IsCodeLike has no observable side effect for values so is backwards
+   compatible when a program produces no code like values.
 
 ### Well-known Symbol
 
@@ -132,9 +132,9 @@ From [ecma262 issue #938](https://github.com/tc39/ecma262/issues/938#issuecommen
 
 #### Pros
 
-Code-like values are proxyable.  (TODO: is this a feature?)
-
-User code can define code-like values.
+*  Code-like values are proxyable.  (TODO: is this a feature?)
+*  User code can define code-like values.  (TODO: is this a feature?)
+*  Can be tested in test262 via user code.
 
 
 ## Testing
