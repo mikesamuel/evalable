@@ -92,6 +92,30 @@ given the string `"() => {}"`.
 
 ## Possible solutions
 
+You can browse the [ecmarkup output](https://mikesamuel.github.io/evalable/)
+or browse the [source](https://github.com/mikesamuel/evalable/blob/master/spec.emu).
+
+All the approaches below do the following
+
+*  Define IsCodeLike(*x*), a spec abstraction that returns true for strings
+   so is backwards compatible, and returns true for some other values.
+   (See details of specific proposals below.)
+*  Tweak PerformEval, which is called by both direct and indirect `eval`, to
+   use IsCodeLike(*x*) instead of the existing (Type(*x*) is String).
+*  Use ToString(*x*) for the code to parse.
+
+### Internal slot
+
+*  IsCodeLike(*x*) additionally returns true when *x* is an object that
+   has an internal slot \[\[CodeLike\]\].
+
+#### Pros
+
+IsCodeLike has no observable side effect for values so is backwards
+compatible when a program produces no code like values.
+
+### Well-known Symbol
+
 From [ecma262 issue #938](https://github.com/tc39/ecma262/issues/938#issuecomment-457352474):
 
 > # Include the string to be compiled in the call to
@@ -100,20 +124,17 @@ From [ecma262 issue #938](https://github.com/tc39/ecma262/issues/938#issuecommen
 > then it is stringified to avoid breaking code that depends on the
 > current behavior where `eval` is identity except for strings.
 
-One option is to:
-
 *  Define a well-known symbol, *\@\@evalable*.
-*  Define IsCodeLike(*x*), a spec abstraction that returns true for strings
-   so is backwards compatible, and returns true when *x* is an object and
+*  IsCodeLike(*x*) additionally returns true when *x* is an object and
    `x[Symbol.evalable]` is truthy.
    Note: using a new symbol makes IsCodeLike backwards comparible for programs
    that do not use `Symbol.evalable`.
-*  Tweak PerformEval, which is called by both direct and indirect `eval`, to
-   use IsCodeLike(*x*) instead of the existing (Type(*x*) is String).
-*  Use ToString(*x*) for the code to parse.
 
-You can browse the [ecmarkup output](https://mikesamuel.github.io/evalable/)
-or browse the [source](https://github.com/mikesamuel/evalable/blob/master/spec.emu).
+#### Pros
+
+Code-like values are proxyable.  (TODO: is this a feature?)
+
+User code can define code-like values.
 
 
 ## Testing
