@@ -86,8 +86,8 @@ attested to previously.</p>
   </emu-clause>
 
   <emu-clause id="sec-iscodelike" aoid="IsCodeLike">
-    <h1><ins>Runtime Semantics: IsCodeLike ( _x_, _currentRealm_ )</ins></h1>
-    <p><ins>The abstract operation IsCodeLike with argument _x_, _currentRealm_ performs steps TBD (see options below).</ins></p>
+    <h1><ins>Runtime Semantics: IsCodeLike ( _x_ )</ins></h1>
+    <p><ins>The abstract operation IsCodeLike with argument _x_ performs steps TBD (see options below).</ins></p>
   </emu-clause>
 </emu-clause>
 
@@ -99,8 +99,8 @@ attested to previously.</p>
   <h1>eval ( _x_ )</h1>
 
   <emu-clause id="sec-iscodelike" aoid="IsCodeLike">
-    <h1><ins>Runtime Semantics: IsCodeLike ( _x_, _currentRealm_ )</ins></h1>
-    <p><ins>The abstract operation IsCodeLike with argument _x_, _currentRealm_ performs the following steps:</ins></p>
+    <h1><ins>Runtime Semantics: IsCodeLike ( _x_ )</ins></h1>
+    <p><ins>The abstract operation IsCodeLike with argument _x_ performs the following steps:</ins></p>
     <emu-alg>
       1. <ins>If Type(_x_) is String, return *true*.</ins>
       1. <ins>If Type(_x_) is Object, then</ins>
@@ -152,8 +152,8 @@ attested to previously.</p>
   <h1>eval ( _x_ )</h1>
 
   <emu-clause id="sec-iscodelike" aoid="IsCodeLike">
-    <h1><ins>Runtime Semantics: IsCodeLike ( _x_, _currentRealm_ )</ins></h1>
-    <p><ins>The abstract operation IsCodeLike with argument _x_, _currentRealm_ performs the following steps:</ins></p>
+    <h1><ins>Runtime Semantics: IsCodeLike ( _x_ )</ins></h1>
+    <p><ins>The abstract operation IsCodeLike with argument _x_ performs the following steps:</ins></p>
     <emu-alg>
       1. <ins>If Type(_x_) is String, return *true*.</ins>
       1. <ins>If Type(_x_) is Object, then</ins>
