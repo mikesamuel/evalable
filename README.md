@@ -1,4 +1,4 @@
-# TC39 Proposal evalable (Stage [0](https://tc39.github.io/process-document/))
+# This proposal has merged into [dynamic-code-brand-checks](https://github.com/mikesamuel/dynamic-code-brand-checks)
 
 Relax the requirement that the argument to eval be a string in a non-breaking way.
 
